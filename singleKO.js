@@ -34,14 +34,25 @@
 // }
 
 // while (byes<teamsNo) {
-//     byes = byes*2;
-//     noRounds++
-// }
-
-
-// ako je 16 ili više timova onda ide u četvrtine (dijelimo s 4)
-const teamsNo = 11;
-let byes = 2;
+    //     byes = byes*2;
+    //     noRounds++
+    // }
+    
+    // ako je 16 ili više timova onda ide u četvrtine (dijelimo s 4)
+    const teamsNo = 11;
+    const tekme = {}
+    for (let i=1; i<=teamsNo; i++) {
+        tekme[`tekma ${i}`] = "timx", "timy"
+    }
+    // let tekme = new Array(teamsNo-1).fill([0, 0])
+    let gameNo = teamsNo - 1
+    let byes = 2;
+    const singleKOTournament = {
+        utakmica: {
+            tekmaN : {id: "rand",
+                timovi: ["timX, timY"], rezultat : 0}
+        }
+    };
 
 // Calculate the number of teams in the upper half
 const upperHalf = Math.ceil(teamsNo / 2);
@@ -50,14 +61,14 @@ let noRounds = Math.ceil(Math.log2(teamsNo));
 byes**=noRounds
 
 // while (byes < teamsNo) {
-//     byes *= 2;
-//     noRounds++;
-// }
-byes = byes - teamsNo
-let upperByes = 0;
-let lowerByes = 0
-// Calculate number of byes in
+    //     byes *= 2;
+    //     noRounds++;
+    // }
+    byes = byes - teamsNo
+    let upperByes = 0;
+    let lowerByes = 0
 
+// Calculate number of byes in
 function splittingByes(byes) {
     
 if (byes % 2 === 0) {
@@ -66,82 +77,70 @@ if (byes % 2 === 0) {
 } else {
     lowerByes = Math.ceil(byes / 2);
     upperByes = byes - lowerByes
-
+    
 }
 }
 splittingByes(byes)
 
-// Output the number of rounds
-// console.log("Number of rounds:", noRounds);
-
 const teams = new Array(2);
 
-function tournamentScheduler() {
-    teams[0] = new Array(upperHalf);
-    teams[1] = new Array(teamsNo - upperHalf);
-    let arrlngth = 0;
+const singleKOMatches = {};
+for (let i=0; i<= noRounds; i++) {
+    singleKOMatches[`round ${i}`] = {}
+}
+
+function fixingByes() {
+    teams[0] = new Array(upperHalf).fill([new String, 0])
+    teams[1] = new Array(teamsNo - upperHalf)
     let upDown = {up: 0, down: 0};
-    let switchHalf= 0;
+    let switchHalf = 0;
 
-    for (let i=0; i<lowerByes; i++) {
-        arrlngth = teams[1].length-1
-        if (!switchHalf) {
 
-                teams[1][arrlngth-upDown.down] = "bye"
-                console.log(teams[1][arrlngth]);
-                switchHalf = 1;
-                upDown.down++
-                
-        } else {
-        teams[1][upDown.up] = "bye"
-        switchHalf = 0;
-        upDown.up++
-        }
+    // Assign byes to the lower half
+    for (let i = 0; i < lowerByes; i++) {
+        let index = switchHalf ? upDown.up : teams[1].length - 1 - upDown.down;
+            teams[1][index] = "bye";
+            switchHalf = 1 - switchHalf;
+             i % 2 === 0 ? upDown.down++ : upDown.up++;
+            }
+            
+            upDown.up = upDown.down = 0
+            switchHalf = 1; // Reset switchHalf for upper half
+            
+    // Assign byes to the upper half
+    for (let i = 0; i < upperByes; i++) {
+        let index = switchHalf ? i : teams[0].length - 1 - i;
+        teams[0][index] = "bye";
+        i % 2 === 0 ? upDown.down++ : upDown.up++;
+        switchHalf = 1 - switchHalf;
     }
+
+    let noMatchesro1 = teams[0].length + teams[1].length + 2 - upperByes - lowerByes
+    for (let i=1; i<=noMatchesro1; i++) {
+        singleKOMatches[`round 1`][`game ${i}`] = ["team x","team y"]
+    }
+    console.log(teams, noRounds);
     
-    switchHalf=1;
-    upDown.up = upDown.down = 0;
-        for (let i=0; i<upperByes; i++) {
-            arrlngth = teams[0].length-1
-            if (!switchHalf) {
-                    teams[0][upDown.up] = "bye"
-                    switchHalf = 1;
-                    upDown.up++;
-            } else {
-            teams[0][arrlngth-upDown.down] = "bye"
-            switchHalf = 0;
-            upDown.down++;
-            }
-            }
-            console.log(teams);
+    
+}
+fixingByes();
+
+const tournamentTracker = []
+function sortingTeams(array) {
+
+    for (let i = array.length; i > 0; i--) {   
+        tournamentTracker.push([`tim ${i}`, 0])
     }
-tournamentScheduler()
+    for (let i = array.length-1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i+1));         
+        [tournamentTracker[i], tournamentTracker[j]] =[tournamentTracker[j], tournamentTracker[i]]
+    }
+    console.log(tournamentTracker);
+}
+sortingTeams(teams[0].concat(teams[1]))
 
-// chatGPT predlaže poboljšanje koda
-
-// function tournamentScheduler() {
-//     teams[0] = new Array(upperByes).fill("bye");
-//     teams[1] = new Array(lowerByes).fill("bye");
-
-//     let switchHalf = 0;
-
-//     // Assign byes to the lower half
-//     for (let i = 0; i < lowerByes; i++) {
-//         let index = switchHalf ? i : teams[1].length - 1 - i;
-//         teams[1][index] = "bye";
-//         switchHalf = 1 - switchHalf;
-//     }
-
-//     switchHalf = 0; // Reset switchHalf for upper half
-
-//     // Assign byes to the upper half
-//     for (let i = 0; i < upperByes; i++) {
-//         let index = switchHalf ? i : teams[0].length - 1 - i;
-//         teams[0][index] = "bye";
-//         switchHalf = 1 - switchHalf;
-//     }
-
-//     console.log(teams);
+// function getUniqueID(){
+//     for(var i = 0; i< 5; i++)
+//       console.log(Date.now() + ( (Math.random()*100000).toFixed()))
 // }
-
-// tournamentScheduler();
+// getUniqueID()
