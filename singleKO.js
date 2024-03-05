@@ -44,9 +44,11 @@
     for (let i=1; i<=teamsNo; i++) {
         tekme[`tekma ${i}`] = "timx", "timy"
     }
+
     // let tekme = new Array(teamsNo-1).fill([0, 0])
     let gameNo = teamsNo - 1
     let byes = 2;
+
     const singleKOTournament = {
         utakmica: {
             tekmaN : {id: "rand",
@@ -89,17 +91,33 @@ for (let i=0; i<= noRounds; i++) {
     singleKOMatches[`round ${i}`] = {}
 }
 
+let tournamentTracker = [];
+
+function sortingTeams(teamsNo) {
+    for (let i =teamsNo; i > 0; i--) {   
+        tournamentTracker.push([`tim ${i}`, Math.floor((Math.random()* 1000000)), " ", 0])
+    }
+    for (let i = tournamentTracker.length-1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i+1));         
+        [tournamentTracker[i], tournamentTracker[j]] =[tournamentTracker[j], tournamentTracker[i]]
+    }
+}
+sortingTeams(teamsNo)
+
+fixingByes();
+
 function fixingByes() {
-    teams[0] = new Array(upperHalf).fill([new String, 0])
-    teams[1] = new Array(teamsNo - upperHalf)
+    // teams[0] = new Array(upperHalf)
+    // teams[1] = new Array(teamsNo - upperHalf)
+    teamsUpperHalf = tournamentTracker.slice(0, upperHalf)
+    teamslowerHalf = tournamentTracker.slice(upperHalf)
     let upDown = {up: 0, down: 0};
     let switchHalf = 0;
 
-
     // Assign byes to the lower half
     for (let i = 0; i < lowerByes; i++) {
-        let index = switchHalf ? upDown.up : teams[1].length - 1 - upDown.down;
-            teams[1][index] = "bye";
+        let index = switchHalf ? upDown.up : teamslowerHalf.length - 1 - upDown.down;
+            teamslowerHalf[index][2] = "bye";
             switchHalf = 1 - switchHalf;
              i % 2 === 0 ? upDown.down++ : upDown.up++;
             }
@@ -109,38 +127,73 @@ function fixingByes() {
             
     // Assign byes to the upper half
     for (let i = 0; i < upperByes; i++) {
-        let index = switchHalf ? i : teams[0].length - 1 - i;
-        teams[0][index] = "bye";
+        let index = switchHalf ? i : teamsUpperHalf.length - i;
+        teamsUpperHalf[index][2] = "bye";
         i % 2 === 0 ? upDown.down++ : upDown.up++;
         switchHalf = 1 - switchHalf;
     }
 
-    let noMatchesro1 = teams[0].length + teams[1].length + 2 - upperByes - lowerByes
-    for (let i=1; i<=noMatchesro1; i++) {
-        singleKOMatches[`round 1`][`game ${i}`] = ["team x","team y"]
-    }
-    console.log(teams, noRounds);
-    
-    
+    let noMatchesro1 = teamsUpperHalf.length + teamslowerHalf.length + 2 - upperByes - lowerByes  
 }
-fixingByes();
 
-const tournamentTracker = []
-function sortingTeams(array) {
+clonedArray = [...tournamentTracker]
+// console.log(clonedArray);
 
-    for (let i = array.length; i > 0; i--) {   
-        tournamentTracker.push([`tim ${i}`, 0])
-    }
-    for (let i = array.length-1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i+1));         
-        [tournamentTracker[i], tournamentTracker[j]] =[tournamentTracker[j], tournamentTracker[i]]
-    }
-    console.log(tournamentTracker);
-}
-sortingTeams(teams[0].concat(teams[1]))
-
-// function getUniqueID(){
-//     for(var i = 0; i< 5; i++)
-//       console.log(Date.now() + ( (Math.random()*100000).toFixed()))
+// function games(arr) {
+//     for (let i=1; i<=noRounds; i++) {
+//         for (j = 0; j<arr.length-1; j++) {
+//     if (clonedArray[j][2] === "bye") {
+//         singleKOMatches[`round ${i+1}`] = [clonedArray[j][1], 0]
+//     }}
 // }
-// getUniqueID()
+// }
+console.log(clonedArray);
+let matches = []
+function games() {
+//     for (i=0; i<clonedArray.length; i++){
+//         if (clonedArray[i][3] === 0) {
+//             console.log(clonedArray[i][2]);
+//         if (clonedArray[i][2] !== "bye" ) {
+//             let game = [0, 0]
+//             clonedArray[i][3] = 1
+//             game[0] = clonedArray[i][0]
+//             if (clonedArray[i+1][2] !== "bye") {
+//                 game[1] = clonedArray[i+1][0]
+//                 matches.push(game)
+//         } if (clonedArray[i+1][2] === "bye")
+//             {matches.push(clonedArray[i])}
+//         }
+//     }
+// }
+for (i=0; i<clonedArray.length; i++){
+    console.log(clonedArray[i]);
+    if (clonedArray[i][2] === "bye") {
+        matches.push(clonedArray[i][0])
+    } else if (clonedArray[i][3] === 0 && clonedArray[i][2] !== "bye"){
+        let game = [0, 0]
+        clonedArray[i][3] = 1
+        game[0] = clonedArray[i][0]
+        if (clonedArray[i+1][2] !== "bye") {
+            clonedArray[i+1][3] = 1
+            game[1] = clonedArray[i+1][0]
+            matches.push(game)
+    }
+}
+}
+console.log(matches);
+}
+
+games()
+
+// while (clonedArray.length>0) {
+//     let i = 0;
+//     if (clonedArray[i][2] === "bye") {
+//         let proxy = clonedArray.slice(i, i+1)
+//         matches.push(proxy)
+//     } else if (clonedArray[i][2] !== "bye" && clonedArray[i+1][2] !== "bye") {
+//         let game = [0, 0]
+//         game[0] = clonedArray.slice(i, i+1)
+//         game[1] = clonedArray.slice(i+1, i+2)
+//         matches.push(game)
+//     }
+// }
