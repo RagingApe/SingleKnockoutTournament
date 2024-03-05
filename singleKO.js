@@ -93,7 +93,7 @@ for (let i=0; i<= noRounds; i++) {
 
 let tournamentTracker = [];
 
-function sortingTeams(teamsNo) {
+function creatingRandomizingTeams(teamsNo) {
     for (let i =teamsNo; i > 0; i--) {   
         tournamentTracker.push([`tim ${i}`, Math.floor((Math.random()* 1000000)), " ", 0])
     }
@@ -102,15 +102,15 @@ function sortingTeams(teamsNo) {
         [tournamentTracker[i], tournamentTracker[j]] =[tournamentTracker[j], tournamentTracker[i]]
     }
 }
-sortingTeams(teamsNo)
+creatingRandomizingTeams(teamsNo)
 
 fixingByes();
 
 function fixingByes() {
-    // teams[0] = new Array(upperHalf)
-    // teams[1] = new Array(teamsNo - upperHalf)
+
     teamsUpperHalf = tournamentTracker.slice(0, upperHalf)
     teamslowerHalf = tournamentTracker.slice(upperHalf)
+    
     let upDown = {up: 0, down: 0};
     let switchHalf = 0;
 
@@ -133,38 +133,14 @@ function fixingByes() {
         switchHalf = 1 - switchHalf;
     }
 
-    let noMatchesro1 = teamsUpperHalf.length + teamslowerHalf.length + 2 - upperByes - lowerByes  
 }
 
 clonedArray = [...tournamentTracker]
-// console.log(clonedArray);
 
-// function games(arr) {
-//     for (let i=1; i<=noRounds; i++) {
-//         for (j = 0; j<arr.length-1; j++) {
-//     if (clonedArray[j][2] === "bye") {
-//         singleKOMatches[`round ${i+1}`] = [clonedArray[j][1], 0]
-//     }}
-// }
-// }
 console.log(clonedArray);
 let matches = []
 function games() {
-//     for (i=0; i<clonedArray.length; i++){
-//         if (clonedArray[i][3] === 0) {
-//             console.log(clonedArray[i][2]);
-//         if (clonedArray[i][2] !== "bye" ) {
-//             let game = [0, 0]
-//             clonedArray[i][3] = 1
-//             game[0] = clonedArray[i][0]
-//             if (clonedArray[i+1][2] !== "bye") {
-//                 game[1] = clonedArray[i+1][0]
-//                 matches.push(game)
-//         } if (clonedArray[i+1][2] === "bye")
-//             {matches.push(clonedArray[i])}
-//         }
-//     }
-// }
+
 for (i=0; i<clonedArray.length; i++){
     console.log(clonedArray[i]);
     if (clonedArray[i][2] === "bye") {
@@ -184,16 +160,3 @@ console.log(matches);
 }
 
 games()
-
-// while (clonedArray.length>0) {
-//     let i = 0;
-//     if (clonedArray[i][2] === "bye") {
-//         let proxy = clonedArray.slice(i, i+1)
-//         matches.push(proxy)
-//     } else if (clonedArray[i][2] !== "bye" && clonedArray[i+1][2] !== "bye") {
-//         let game = [0, 0]
-//         game[0] = clonedArray.slice(i, i+1)
-//         game[1] = clonedArray.slice(i+1, i+2)
-//         matches.push(game)
-//     }
-// }
