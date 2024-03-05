@@ -160,3 +160,11 @@ console.log(matches);
 }
 
 games()
+
+
+// inicijalizacija aplikacije
+// broj rundi određuje korake
+// 0 runda rapoređuje byeve i utakmice
+// 1 runda je samo petlja s utakmicama
+// n puta prođe kroz utakmice
+// osmine,četvrt,polu, finale
