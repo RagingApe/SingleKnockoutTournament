@@ -24,7 +24,7 @@
 // 11-5th-12 8th 13-Bye
 
 // let teamsNo = 15;
-// let upperHalf = 0;
+// let upperHalfTeams = 0;
 // let byes = 2;
 // let noRounds = 1;
 // if (teamsNo%2 == 0) {
@@ -40,21 +40,27 @@
     // ako je 16 ili više timova onda ide u četvrtine (dijelimo s 4)
 
 class TournamentData {
+
     constructor(brojMomcadi,byesBase) {
-    this.teamsNo = brojMomcadi;
-    // Calculate the number of teams in the upper half
-    this.upperHalf = Math.ceil(this.teamsNo / 2);
-    this.noRounds = Math.ceil(Math.log2(this.teamsNo));
-    this.byes = byesBase**this.noRounds - this.teamsNo;
+    this.teamsCount = brojMomcadi;
+    this.upperHalfTeams = Math.ceil(this.teamsCount / 2);
+    this.roundsCount = Math.ceil(Math.log2(this.teamsCount));
+    this.byes = byesBase**this.roundsCount - this.teamsCount;
     }
+
+    // variables initialization
     lowerByes =0;
     upperByes =0;
-    teams = new Array(2);
+
+    //arrays for teams and macthes
     timovi = [];
     matches = [];
 
-    // Calculate number of byes in tournament
-    splittingByes() {
+    //tournament rounds
+    rounds = {};
+
+    // Split number of byes in between upper and lower half
+    splitByes() {
         if (this.byes % 2 === 0) {
             this.lowerByes = this.upperByes = this.byes/2
         } else {
@@ -63,10 +69,31 @@ class TournamentData {
             
         }
     };
-    randomizingTeams() {
-        for (let i =this.teamsNo; i > 0; i--) {   
+
+    generateRounds() {
+        // const brojtekmi = brojtimova -1
+        // let i=this.roundsCount
+    
+        // while (i>0) {
+        //     // if (i === this.roundsCount) {this.kolo[`finale`] = [];  this.kolo[`treće mjesto`] = []; i--}
+        //     // else if (i === this.roundsCount -1) {this.kolo[`polufinale`] = []; i--}
+        //     // else if  (i === this.roundsCount-2) {this.kolo[`četvrtfinale`] = []}
+        //     // else if  (i === this.roundsCount-3) {this.kolo[`osmine`] = []}
+        //     // else {
+        //         this.kolo[`kolo${i}`] = []
+        //         i--;
+        //     }
+        for (let i = this.roundsCount; i > 0; i--) {
+            this.rounds[`round ${i}`] = [];
+        }
+        }
+
+    randomizeTeams() {
+        for (let i =this.teamsCount; i > 0; i--) {   
             this.timovi.push([`tim ${i}`, Math.floor((Math.random()* 1000000)), " ", 0])
         }
+
+        //Shuffle teams randomly
         for (let i = this.timovi.length-1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i+1));         
             [this.timovi[i], this.timovi[j]] =[this.timovi[j], this.timovi[i]]
@@ -74,191 +101,95 @@ class TournamentData {
 
     }
 
-    sortingByes() {
-        let teamsUpperHalf, teamslowerHalf;
-        teamsUpperHalf = this.timovi.slice(0, this.upperHalf)
-        teamslowerHalf = this.timovi.slice(this.upperHalf)
+    // settingTournamentGames() {
+    //     // const brojtekmi = brojtimova -1
+    //     for (let i=this.roundsCount; i<this.roundsCount; i--) {
+    //         if (i===0) {this.kolo[`${i}. kolo`] = []} 
+    //         else if  (i === this.roundsCount-2) {this.kolo[`četvrtfinale`] = []} 
+    //         else if (i === this.roundsCount -1) {this.kolo[`polufinale`] = []}
+    //         else if (i === this.roundsCount) {this.kolo[`finale`] = [];  this.kolo[`treće mjesto`] = []}
+    //         else {
+    //             this.kolo[`${i}. kolo`] = []
+    //         }
+    //     }        
+    // }
+
+    assingByes() {
+        let upperHalfTeams = this.timovi.slice(0, this.upperHalfTeams)
+        let lowerHalfTeams = this.timovi.slice(this.upperHalfTeams)
         
-        let upDown = {up: 0, down: 0};
+        let byeCounter = {up: 0, down: 0};
         let switchHalf = 0;
     
         // Assign byes to the lower half
         for (let i = 0; i < this.lowerByes; i++) {
-            let index = switchHalf ? upDown.up : teamslowerHalf.length - 1 - upDown.down;
-                teamslowerHalf[index][2] = "bye";
+            let index = switchHalf ? byeCounter.up : lowerHalfTeams.length - 1 - byeCounter.down;
+                lowerHalfTeams[index][2] = "bye";
                 switchHalf = 1 - switchHalf;
-                 i % 2 === 0 ? upDown.down++ : upDown.up++;
+                 i % 2 === 0 ? byeCounter.down++ : byeCounter.up++;
                 }
                 
-                upDown.up = upDown.down = 0
-                switchHalf = 1; // Reset switchHalf for upper half
+        // Reset switchHalf for the upper half and by counter
+        switchHalf = 1;
+        byeCounter.up = byeCounter.down = 0
                 
         // Assign byes to the upper half
         for (let i = 0; i < this.upperByes; i++) {
-            let index = switchHalf ? i : teamsUpperHalf.length - i;
-            teamsUpperHalf[index][2] = "bye";
-            i % 2 === 0 ? upDown.down++ : upDown.up++;
+            let index = switchHalf ? i : upperHalfTeams.length - i;
+            upperHalfTeams[index][2] = "bye";
+            i % 2 === 0 ? byeCounter.down++ : byeCounter.up++;
             switchHalf = 1 - switchHalf;
         }
     
     }
 
-    games() {
-        let clonedArray = [...this.timovi]
-    for (let i=0; i<clonedArray.length; i++){
-        if (clonedArray[i][2] === "bye") {
-            this.matches.push(clonedArray[i][0])
-        } else if (clonedArray[i][3] === 0 && clonedArray[i][2] !== "bye"){
+    setupGames() {
+    for (let i=0; i<this.timovi.length; i++){
+        if (this.timovi[i][2] === "bye") {
+            this.rounds[`round ${1}`].push(this.timovi[i][0])
+
+        } else if (this.timovi[i][3] === 0 && this.timovi[i][2] !== "bye"){
             let game = [0, 0]
-            clonedArray[i][3] = 1
-            game[0] = clonedArray[i][0]
-            if (clonedArray[i+1][2] !== "bye") {
-                clonedArray[i+1][3] = 1
-                game[1] = clonedArray[i+1][0]
+            this.timovi[i][3] = 1
+            game[0] = this.timovi[i][0]
+            if (this.timovi[i+1][2] !== "bye") {
+                this.timovi[i+1][3] = 1
+                game[1] = this.timovi[i+1][0]
                 this.matches.push(game)
+                this.rounds[`round ${1}`].push(game)
         }
     }
     }
     }
+
+    // generate subsequent rounds
+    generateNextRounds() { 
+        for (let i=1; i<Object.keys(this.rounds).length; i++){
+            for (let j=0; j<this.rounds[`round ${i}`].length; j+=2) {
+                this.rounds[`round ${i+1}`].push([this.rounds[`round ${i}`][j],this.rounds[`round ${i}`][j+1]] )
+            }
+            }  
+    }
+    
+    // app initialization
         begin() {
-        this.splittingByes();
-        this.randomizingTeams();
-        this.sortingByes();
-        this.games();
+        this.generateRounds();
+        this.splitByes();
+        this.randomizeTeams();
+        this.assingByes();
+        this.setupGames()
+        this.generateNextRounds()
     }
 }
 
 const tourney = new TournamentData(11, 2)
-console.log(tourney);
 tourney.begin()
 const tourney2 = new TournamentData(14, 2);
 tourney2.begin()
-console.log(tourney2);
-const tourney3 = new TournamentData(3, 2);
+const tourney3 = new TournamentData(4, 2);
 tourney3.begin()
-console.log(tourney3);
-
-const divClon = document.getElementById('tekme')
-
-tourney.matches.forEach(element => {
-    divClon.append(element)
-    
-});(tourney3.matches)
-//     const teamsNo = 11;
-
-//     let gameNo = teamsNo - 1
-//     let byes = 2;
-
-// // Calculate the number of teams in the upper half
-// const upperHalf = Math.ceil(teamsNo / 2);
-// // Calculate the number of rounds needed
-// let noRounds = Math.ceil(Math.log2(teamsNo));
-// byes**=noRounds
 
 
-//     byes = byes - teamsNo
-//     let upperByes = 0;
-//     let lowerByes = 0
-// byes = {byes: byes}
-
-// Calculate number of byes in
-// function splittingByes(byes) {
-    
-// if (byes % 2 === 0) {
-//     lowerByes = upperByes = byes/2
-//     console.log(byes, lowerByes, upperByes);
-// } else {
-//     lowerByes = Math.ceil(byes / 2);
-//     upperByes = byes - lowerByes
-    
-// }
-// }
-// splittingByes(byes)
-
-// const teams = new Array(2);
-
-// let timovi = [];
-
-// function randomizingTeams(brojTimova) {
-//     for (let i =brojTimova; i > 0; i--) {   
-//         timovi.push([`tim ${i}`, Math.floor((Math.random()* 1000000)), " ", 0])
-//     }
-//     for (let i = timovi.length-1; i > 0; i--) {
-//         const j = Math.floor(Math.random() * (i+1));         
-//         [timovi[i], timovi[j]] =[timovi[j], timovi[i]]
-//     }
-//     console.log(timovi);
-// }
-
-
-
-// function sortingByes(timovi) {
-
-//     teamsUpperHalf = timovi.slice(0, upperHalf)
-//     teamslowerHalf = timovi.slice(upperHalf)
-    
-//     let upDown = {up: 0, down: 0};
-//     let switchHalf = 0;
-
-//     // Assign byes to the lower half
-//     for (let i = 0; i < lowerByes; i++) {
-//         let index = switchHalf ? upDown.up : teamslowerHalf.length - 1 - upDown.down;
-//             teamslowerHalf[index][2] = "bye";
-//             switchHalf = 1 - switchHalf;
-//              i % 2 === 0 ? upDown.down++ : upDown.up++;
-//             }
-            
-//             upDown.up = upDown.down = 0
-//             switchHalf = 1; // Reset switchHalf for upper half
-            
-//     // Assign byes to the upper half
-//     for (let i = 0; i < upperByes; i++) {
-//         let index = switchHalf ? i : teamsUpperHalf.length - i;
-//         teamsUpperHalf[index][2] = "bye";
-//         i % 2 === 0 ? upDown.down++ : upDown.up++;
-//         switchHalf = 1 - switchHalf;
-//     }
-
-// }
-
-// let matches = []
-
-// function games() {
-//     clonedArray = [...timovi]
-// for (i=0; i<clonedArray.length; i++){
-//     console.log(clonedArray[i]);
-//     if (clonedArray[i][2] === "bye") {
-//         matches.push(clonedArray[i][0])
-//     } else if (clonedArray[i][3] === 0 && clonedArray[i][2] !== "bye"){
-//         let game = [0, 0]
-//         clonedArray[i][3] = 1
-//         game[0] = clonedArray[i][0]
-//         if (clonedArray[i+1][2] !== "bye") {
-//             clonedArray[i+1][3] = 1
-//             game[1] = clonedArray[i+1][0]
-//             matches.push(game)
-//     }
-// }
-// }
-// console.log(matches);
-// }
-
-// games()
-
-
-// inicijalizacija aplikacije
-// nasumično dodjeljivanje mjesta timovima
-// broj rundi određuje korake
-// 0 runda rapoređuje byeve i utakmice
-// 1 runda je samo petlja s utakmicama
-// n puta prođe kroz utakmice
-// osmine,četvrt,polu, finale
-
-// function app (brojRundi, turnirId) {
-//     randomizingTeams(teamsNo)
-//     sortingByes(timovi)
-
-//     for (i=1; i<brojRundi; i++) {
-//     }
-// }
-// app()
+// console.log(tourney);
+console.log(tourney2);
+// console.log(tourney3);
