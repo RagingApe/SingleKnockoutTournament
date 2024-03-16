@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Kruh s maslacem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script src="index.js"></script>
+</body>
+<body>
+    <div class="topnav">
+        <a href="index.html">Home</a>
+        <a class="active">Blog</a>
+        <a href="#contact">Contact</a>
+        <a href="#about">About</a>
+      </div> 
+      <p>
+        <h2>*** AJAX - Asyn ***</h2>
+        Namjera ovog članka je opisati komunikacijski mehanizam aplikacije sa serverom.
+        U nastavku članka razjasnit ćemo XHR, Fetch i asinkroni pristup pisanju Fetch API-ja.
+    <br>    
+        <h3>*** Što je AJAX? ***</h3>
+        <br>
+        Asynchronous JavaScript and XML je način pisanja web aplikacije  koji omogućava asinkronu razmjenu podataka sa serverom. Koristi kombinaciju ugrađenog XHR objekta u pregledniku Javascripta i DOM-a za prikaz podataka. Asinkrona razmjena podataka omogućava da se djelovi stranice ažuriraju, bez osvježavanja cijele.
+        <br>
+        https://developer.mozilla.org/en-US/docs/Glossary/Ajax
+        https://www.w3schools.com/whatis/whatis_ajax.asp
+        https://fetch.spec.whatwg.org/#response-class
+        <br>
+        <h2>*** Načini pisanja AJAX-a ***</h2>
+        <br>
+        <h3>*** XMLHttpRequest ***</h3>
+        <br>
+        XMLHttpRequest je ugrađeni objekt u browseru koji nam dopušta da radimo HTTP zahtjeve u JavaScriptu.
+        U modernim browserima ugrađeni objekt XMLHttpRequest koristi se iz tri razloga:
+        1. Povijesni razlozi radi podrške postojećim skriptama
+        2. Podrška starim browserima, a ne želimo polyfill kod
+        3. Da bi pratili upload progres.
+        <br>
+        <br>
+        XMLHttpRequest uspostavljamo na sljedeći način.
+        <br>
+        1. korak - stvaramo AJAX objekt
+        <br>
+        function runXHR(url) {
+        const  xhr = new XMLHttpRequest();
+        <br>
+        2. korak - postavljamo 'okidače' (listeners)
+        <br>
+        xhr.addEventListener('progress', handleEvent)
+        <br>
+        3. korak  - konfiguriramo AJAX Request
+        <br>
+        xhr.open('GET', url) // xhr.open(method, URL, [async, user, password])
+        <br>
+        4. korak - šaljemo zahtjev
+        <br>
+        xhr.send()
+        return xhr
+        }
+        <br>
+        function handleEvent (e) {
+            console.log(`${e.type}: ${e.loaded}`)
+        }
+        <br>
+        <h3>*** fetch() ***</h3>
+        <br>
+        <br>
+        fetch() je moderan način pisanja AJAX-a zasnovan na promise načinu pisanja, dok je XMLHttpRequest callback ovisan način. 
+            Najjednostavniji način korištenja je da fetch() dobiva samo jedan argument (url), a metoda (fetch) nam vraća promise koji se razlaže (resolve) ugrađenom response klasom; opcije su izborne kao npr. metode, headeri itd.
+            <br> 
+        let promise = fetch(url, [options]);
+        <br>
+        promise.then(response =>  return response.json())
+        .then(data => console.log(data))
+        <br>
+        ili
+        promise.then(response => return response.text())
+        .then(txt => console.log(txt))
+        <br>
+        https://fetch.spec.whatwg.org/#response-class
+        <br>
+        <h3>*** Async-await ***</h3>
+        Async-await je ono što bismo nazvali sintaktički šećer; preglednije napisana fetch metoda.
+        Pišemo je tako da sve zaokružimo u async funkciju, gdje 'čekamo' (await) riječ koja odapinje asinkronu izvedbu.
+        <br>
+        async function (url) {
+            let response = fetch(url)
+            let txt = response.text()
+        }
+        <br>
+        <h3>*** Zaključak ***</h3>
+        <br>
+        Koncepti nužni za shvaćanje ovog članka su callback funkcija, po inerciji callback pakao, na što se veže XMLHttpRequest koji koristi callback funkcije. Promise objekt i način pisanja na koji se veže fetch() funkcija koja vraća resolve promise, i .then() metoda kojom konzumiramo promise funkcije (resolve ili reject). Async await samo drukčiji način pisanja fetch() funkcije. 
+        Članak se nije dotakao čitanja statusa requesta, tj. dohvaćanja headera response objekta 'response.status' ili 'response.ok' ili errora koji proizlaze iz krivo napisanog koda, grešaka u komunikaciji sa serverom, dostupnosti ili nedostupnosti servera. Ostavljamo to u aneksu članku radi jednostavnosti.
+        <br>
+        <h3>*** Dodatak članku ***</h3>
+        <br>
+        - error handling
+        .catch() radi samo kad se dogodi network error (kad nije spojen, kad se dogodi prekid veze..) - sam baciš (throw) error 
+        .then (res => {
+            if(!res.ok) {
+                throw new Error('message') ili throw res.statusText
+            }
+        })
+        .catch(err => {})
+        - header status checks - https://javascript.info/fetch
+        Request interface
+        <br>
+        let req = new Request();
+        req = (url, {
+            method:'',
+            headers: myHeaders
+            })
+        let myHeaders = new Headers();
+        myHeaders.append('name', 'value')
+        <br>
+</p>
+</body>
+
+</html>
