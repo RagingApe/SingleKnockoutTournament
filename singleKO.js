@@ -48,13 +48,13 @@ class TournamentData {
     this.byes = byesBase**this.roundsCount - this.teamsCount;
     }
 
+    matchCounter= 1;
     // variables initialization
     lowerByes =0;
     upperByes =0;
 
     //arrays for teams and macthes
     timovi = [];
-    matches = [];
 
     //tournament rounds
     rounds = {};
@@ -71,18 +71,7 @@ class TournamentData {
     };
 
     generateRounds() {
-        // const brojtekmi = brojtimova -1
-        // let i=this.roundsCount
-    
-        // while (i>0) {
-        //     // if (i === this.roundsCount) {this.kolo[`finale`] = [];  this.kolo[`treće mjesto`] = []; i--}
-        //     // else if (i === this.roundsCount -1) {this.kolo[`polufinale`] = []; i--}
-        //     // else if  (i === this.roundsCount-2) {this.kolo[`četvrtfinale`] = []}
-        //     // else if  (i === this.roundsCount-3) {this.kolo[`osmine`] = []}
-        //     // else {
-        //         this.kolo[`kolo${i}`] = []
-        //         i--;
-        //     }
+
         for (let i = this.roundsCount; i > 0; i--) {
             this.rounds[`round ${i}`] = [];
         }
@@ -100,19 +89,6 @@ class TournamentData {
         }
 
     }
-
-    // settingTournamentGames() {
-    //     // const brojtekmi = brojtimova -1
-    //     for (let i=this.roundsCount; i<this.roundsCount; i--) {
-    //         if (i===0) {this.kolo[`${i}. kolo`] = []} 
-    //         else if  (i === this.roundsCount-2) {this.kolo[`četvrtfinale`] = []} 
-    //         else if (i === this.roundsCount -1) {this.kolo[`polufinale`] = []}
-    //         else if (i === this.roundsCount) {this.kolo[`finale`] = [];  this.kolo[`treće mjesto`] = []}
-    //         else {
-    //             this.kolo[`${i}. kolo`] = []
-    //         }
-    //     }        
-    // }
 
     assingByes() {
         let upperHalfTeams = this.timovi.slice(0, this.upperHalfTeams)
@@ -149,24 +125,25 @@ class TournamentData {
             this.rounds[`round ${1}`].push(this.timovi[i][0])
 
         } else if (this.timovi[i][3] === 0 && this.timovi[i][2] !== "bye"){
-            let game = [0, 0]
+            let game = [this.matchCounter, [0, 0]]
             this.timovi[i][3] = 1
-            game[0] = this.timovi[i][0]
+            game[1][0] = this.timovi[i][0]
             if (this.timovi[i+1][2] !== "bye") {
                 this.timovi[i+1][3] = 1
-                game[1] = this.timovi[i+1][0]
-                this.matches.push(game)
+                game[1][1] = this.timovi[i+1][0]
                 this.rounds[`round ${1}`].push(game)
+                this.matchCounter++
         }
     }
     }
     }
 
     // generate subsequent rounds
-    generateNextRounds() { 
+    generateNextRounds() {
         for (let i=1; i<Object.keys(this.rounds).length; i++){
             for (let j=0; j<this.rounds[`round ${i}`].length; j+=2) {
-                this.rounds[`round ${i+1}`].push([this.rounds[`round ${i}`][j],this.rounds[`round ${i}`][j+1]] )
+                this.rounds[`round ${i+1}`].push([this.matchCounter, [this.rounds[`round ${i}`][j],this.rounds[`round ${i}`][j+1]]] )
+                this.matchCounter++;
             }
             }  
     }
@@ -186,7 +163,7 @@ const tourney = new TournamentData(11, 2)
 tourney.begin()
 const tourney2 = new TournamentData(14, 2);
 tourney2.begin()
-const tourney3 = new TournamentData(4, 2);
+const tourney3 = new TournamentData(13, 2);
 tourney3.begin()
 
 
